@@ -10,6 +10,8 @@ public class scr_player : MonoBehaviour {
 	public float moveDelay = 0.2f; // movement delay in s
 	private float moveTimer = 0;
 	private bool moving = false;
+	public float moveSpeed = .5f;
+	private Vector2 moveTarget;
 	private Rigidbody2D rb2D;
 
 
@@ -18,6 +20,7 @@ public class scr_player : MonoBehaviour {
 		moveTimer = 0;
 		Cursor.visible = true;
 		rb2D = GetComponentInParent<Rigidbody2D>();
+		moving = false;
 	}
 
 	public Vector3Int GetPosition()
@@ -31,72 +34,89 @@ public class scr_player : MonoBehaviour {
 		pos_y = y;
 	}
 
-	public void MovePosition(int x, int y)
-	{
-			pos_x += x;
-			pos_y += y;
-	}
+	//public void MovePosition(int x, int y)
+	//{
+	//	pos_x += x;
+	//	pos_y += y;
+	//}
 
 	public void GetMovement()
 	{
-		//Debug.Log(moveTimer);
+		Debug.Log(moving + " " + moveTarget);
 		if (controlMode == 0)
 		{
-			if (moving == false)
-				moveTimer = 0;
-			else
-			{
-				if (Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
-				{
-					moveTimer = 0;
-				}
+			//if (moving == false)
+			//	moveTimer = 0;
+			//else
+			//{
 
-				if (moveTimer > 0)
-					moveTimer -= Time.deltaTime;
-				else
-				{
-					moveTimer = 0;
-					moving = false;
-				}
-			}
+			//	if (Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)
+			//	{
+			//		moveTimer = 0;
+			//	}
+
+			//	//if (moveTimer > 0)
+			//	//	moveTimer -= Time.deltaTime;
+			//	//else
+			//	//{
+			//	//	moveTimer = 0;
+			//	//	moving = false;
+			//	//}
+			//}
 
 			int posx_d = 0, posy_d = 0;
 			if (moving == false)
 			{
 				if (Input.GetAxis("Horizontal") != 0)
 				{
-					moving = true;
-					moveTimer = moveDelay;
-
 					if (Input.GetAxis("Horizontal") < 0)
-						posx_d = Mathf.FloorToInt(Input.GetAxis("Horizontal"));
+						posx_d = -1;
 					else if (Input.GetAxis("Horizontal") > 0)
-						posx_d = Mathf.CeilToInt(Input.GetAxis("Horizontal"));
+						posx_d = 1;
 				}
 				else if (Input.GetAxis("Vertical") != 0)
 				{
-					moving = true;
-					moveTimer = moveDelay;
-
 					if (Input.GetAxis("Vertical") < 0)
-						posy_d = Mathf.FloorToInt(Input.GetAxis("Vertical"));
+						posy_d = -1;
 					else if (Input.GetAxis("Vertical") > 0)
-						posy_d = Mathf.CeilToInt(Input.GetAxis("Vertical"));
+						posy_d = 1;
 				}
 
 				if (posx_d != 0)
 				{
 					//MovePosition(posx_d, 0);
-					rb2D.MovePosition(rb2D.position + new Vector2(posx_d, 0));
+					moving = true;
+					moveTarget = (rb2D.position + new Vector2(posx_d, 0));
+					rb2D.MovePosition(rb2D.position + ((moveTarget - rb2D.position) * moveSpeed));
+					SetPosition(pos_x + posx_d, pos_y + posy_d);
 				}
 				else if (posy_d != 0)
 				{
-					rb2D.MovePosition(rb2D.position + new Vector2(0, posy_d));
+					moving = true;
+					moveTarget = (rb2D.position + new Vector2(0, posy_d));
+					rb2D.MovePosition(rb2D.position + ((moveTarget - rb2D.position) * moveSpeed));
+					SetPosition(pos_x + posx_d, pos_y + posy_d);
 				}
+				
+			}
+			else
+			{
+				if (moveTarget == rb2D.position)
+				{
+					moving = false;
+					return;
+				} else
+					rb2D.MovePosition(rb2D.position + ((moveTarget - rb2D.position) * moveSpeed));
 			}
 
 
 		}
 
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		moving = false;
+		moveTarget = rb2D.position;
 	}
 }
