@@ -7,7 +7,8 @@ public class scr_GameManager : MonoBehaviour {
 
 	public int tileSize = 32; // size of tiles, used to move objects around the grid
 	public GameObject player; // reference to player object
-	private scr_player player_script;
+	private scr_player playerRef;
+	private scr_controls controlsRef;
 	public Tilemap tilemap; // ref to tilemap
 	private GameObject[] npcs; // npc and enemy objects
 
@@ -16,19 +17,16 @@ public class scr_GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Debug.Log(tilemap.origin);
-		player_script = player.GetComponent<scr_player>();
-		player_script.SetPosition(tilemap.origin.x, tilemap.origin.y);
+		playerRef = player.GetComponent<scr_player>();
+		playerRef.SetPosition(tilemap.origin.x, tilemap.origin.y);
+		controlsRef = player.GetComponent<scr_controls>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		// Move player
-		player.transform.position = CellToWorld(tilemap.origin);
-	}
-
-	private void FixedUpdate()
-	{
-		
+		controlsRef.GetMovement();
+		player.transform.position = CellToWorld(playerRef.GetPosition());
 	}
 
 	private Vector3 CellToWorld(Vector3Int cellRef)
