@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class scr_GameManager : MonoBehaviour {
-
-	public int tileSize = 32; // size of tiles, used to move objects around the grid
-
-	
+public class scr_player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -15,11 +11,6 @@ public class scr_GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// Move player
-	}
-
-	private void FixedUpdate()
-	{
 		
 	}
 }
